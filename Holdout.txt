@@ -1,0 +1,121 @@
+library(rpart)
+
+#The following code is a Holdout Method where 90% of the dataset 
+#is being used to train and 10% train for the prediction model. 
+#The implementation is repeated 20 times and an average is taken. 
+
+
+# Wine DataSet
+##########################################################################################
+
+acc <- 0
+for ( i in 1:20) {
+  
+  mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/Wine.csv")
+  dataset <- mydata
+  sampleRate <- 0.10
+  #90% of data is training, 10% is testing
+  sampleSize <- nrow(dataset) * sampleRate
+  #Samesize randomized with every trial.
+  testSampleIdx <- sample(nrow(dataset), size=sampleSize)
+   #testset
+  testSet <- dataset[testSampleIdx,]
+  #training dataset for prediction model 
+  trainingSet <- dataset[-testSampleIdx,]
+
+  iris.dt <- rpart(Wine ~ Alcohol + Malic.acid + Ash +
+                     Acl + Mg + Phenols + Flavanoids + Nonflavanoid.phenols + Proanth + Color.int 
+                   + Hue + OD + Proline, data=trainingSet, method="class")
+  
+  prediction <- predict(iris.dt, newdata=testSet, type="class")
+  #Accuracy is calculated using a confusion matrix
+  cM <- table(testSet$Wine, prediction)
+  #Data is saved on a list from each trail
+  acc[i]<- sum(diag(cM))/sum(cM)
+}
+
+mean(acc)
+sd(acc)
+
+#Same Experiment is repeated using remaining 3 datasets
+# Iris Dataset DATASET
+##########################################################################################
+
+acc <- 0
+for ( i in 1:20) {
+  
+  sampleRate <- 0.10
+  sampleSize <- nrow(iris) * sampleRate
+  testSampleIdx <- sample(nrow(iris), size=sampleSize)
+  testSet <- iris[testSampleIdx,]
+  trainingSet <- iris[-testSampleIdx,]
+
+  iris.dt <- rpart(Species ~ Sepal.Length + Sepal.Width + Petal.Length +
+                     Petal.Width, data=trainingSet, method="class")
+  
+   prediction <- predict(iris.dt, newdata=testSet, type="class")
+  cM <- table(testSet$Species, prediction)
+  acc[i]<- sum(diag(cM))/sum(cM)
+}
+acc
+mean(acc)
+sd(acc)
+
+# Teacher Eval  DATASET
+##########################################################################################
+
+acc <- 0
+for ( i in 1:20) {
+  
+  teacher_eval = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/teacher_assistant_evaluation.csv")
+  dataset <- teacher_eval
+  sampleRate <- 0.10
+  sampleSize <- nrow(dataset) * sampleRate
+
+  testSampleIdx <- sample(nrow(dataset), size=sampleSize)
+  #testSampleIdx
+  testSet <- dataset[testSampleIdx,]
+
+  trainingSet <- dataset[-testSampleIdx,]
+  iris.dt <- rpart(speaker ~ course_instructor +	Course +	semester 
+                   + Clas_size +	class_attribute, data=trainingSet, method="class")
+  
+  prediction <- predict(iris.dt, newdata= testSet, type="class")
+  cM <- table(testSet$speaker, prediction)
+  acc[i]<- sum(diag(cM))/sum(cM)
+}
+
+
+mean(acc)
+sd(acc)
+
+
+# Breast Cancer DATASET
+##########################################################################################
+
+acc <- 0
+for ( i in 1:20) {
+  
+  breastcancer = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/breastcancer.csv")
+  dataset <- breastcancer
+  sampleRate <- 0.10
+  sampleSize <- nrow(dataset) * sampleRate
+
+  testSampleIdx <- sample(nrow(dataset), size=sampleSize)
+  testSet <- dataset[testSampleIdx,]
+  trainingSet <- dataset[-testSampleIdx,]
+
+  
+  iris.dt <- rpart(class ~ id + clump_thickness	+ size_uniformity + shape_uniformity 
+                   +	marginal_adhesion	+ epithelial_size	+ bare_nucleoli	+ 
+                     bland_chromatin	+ normal_nucleoli	+ mitoses, data=trainingSet, method="class")
+  
+
+  prediction <- predict(iris.dt, newdata= testSet, type="class")
+  cM <- table(testSet$class, prediction)
+  acc[i]<- sum(diag(cM))/sum(cM)
+}
+
+mean(acc)
+sd(acc)
+

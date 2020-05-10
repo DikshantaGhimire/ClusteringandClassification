@@ -1,0 +1,187 @@
+#The following dataset uses a 10xVal method where the data is split into 10 folds. 
+#Each fold is then tested whilst the remaining is used to train the predictive model
+
+library(rpart)
+library(caret)
+library(lattice)
+library(ggplot2) 
+#install.packages('roperators')
+library (roperators)
+
+
+#Wine Dataset
+###################################################################
+start.time <- Sys.time()
+#10-fold method 
+numTrails <-20
+n.folds <-10
+acc <- NULL
+for (i in 1:numTrails){
+  
+  mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/Wine.csv")
+  dataset <- mydata
+  
+  #sufflethedata for each trail
+  shuffle_dataset <- sample(nrow(mydata)) #randomise the iris rows dataset  
+  training.kfold <- dataset[shuffle_dataset,] #create a training dataset
+  
+  
+ #create 10 folds for xVal
+  folds <- createFolds(training.kfold$Wine, k = 10, list = TRUE, returnTrain = TRUE)
+  
+  
+  #Each fold in a loop is tested and trained 
+  for (j in 1:n.folds){ 
+  
+    XVal.dts <- rpart(Wine ~ Alcohol + Malic.acid + Ash +
+                        Ash + Acl + Mg + Phenols + Flavanoids + Nonflavanoid.phenols + Proanth + Color.int 
+                      + Hue + OD + Proline, data= training.kfold[folds[[j]],], method="class")
+    
+    
+    #data is predicted for each fold and stored in accuracy below
+    predic <- predict(XVal.dts, newdata=training.kfold[-folds[[j]],], type="class") 
+    #build a predictiive data model.
+    
+  }
+  #accuracy is sotred as a list for all 20 trials 
+  acc[i] <- confusionMatrix(predic, factor(training.kfold[-folds[[j]],]$Wine))$overall[[1]]
+  }
+
+mean(acc)
+sd(acc)
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
+
+#Iris
+###################################################################
+
+start.time <- Sys.time()
+#10-fold method 
+numTrails <-20
+n.folds <-10
+acc <- NULL
+accuracies.dt <- NULL
+for (i in 1:numTrails){
+  
+  mydata <- (iris)
+  dataset <- mydata
+  #sufflethedata for each trail
+  shuffle_dataset <- sample(nrow(mydata)) #randomise the iris rows dataset  
+  training.kfold <- dataset[shuffle_dataset,] #create a training dataset
+  
+  
+  #create 10 folds for xVal
+  folds <- createFolds(training.kfold$Species, k = 10, list = TRUE, returnTrain = TRUE)
+  
+  
+  #Each fold in a loop is tested and trained 
+  for (j in 1:n.folds){ 
+    
+    XVal.dts <- rpart(Species ~ Sepal.Length + Sepal.Width + Petal.Length +
+                        Petal.Width, data= training.kfold[folds[[j]],], method="class")
+    
+    
+    #data is predicted for each fold and stored in accuracy below
+    predic <- predict(XVal.dts, newdata=training.kfold[-folds[[j]],], type="class") 
+    #build a predictiive data model.
+    
+  }
+  #accuracy is sotred as a list for all 20 trials 
+  acc[i] <- confusionMatrix(predic, factor(training.kfold[-folds[[j]],]$Species))$overall[[1]]
+}
+
+mean(acc)
+sd(acc)
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
+
+# Teacher Eval  DATASET
+###################################################################
+
+start.time <- Sys.time()
+#10-fold method 
+numTrails <-20
+n.folds <-10
+acc <- NULL
+accuracies.dt <- NULL
+for (i in 1:numTrails){
+  
+  mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/teacher_assistant_evaluation.csv")
+  dataset <- mydata
+  #sufflethedata for each trail
+  shuffle_dataset <- sample(nrow(mydata)) #randomise the iris rows dataset  
+  training.kfold <- dataset[shuffle_dataset,] #create a training dataset
+  
+  
+  #create 10 folds for xVal
+  folds <- createFolds(training.kfold$speaker, k = 10, list = TRUE, returnTrain = TRUE)
+  
+  
+  #Each fold in a loop is tested and trained 
+  for (j in 1:n.folds){ 
+    
+    XVal.dts <- rpart(speaker ~ course_instructor +	Course +	semester 
+                      + Clas_size +	class_attribute, data= training.kfold[folds[[j]],], method="class")
+    
+    
+    #data is predicted for each fold and stored in accuracy below
+    predic <- predict(XVal.dts, newdata=training.kfold[-folds[[j]],], type="class") 
+    #build a predictiive data model.
+    
+  }
+  #accuracy is sotred as a list for all 20 trials 
+  acc[i] <- confusionMatrix(predic, factor(training.kfold[-folds[[j]],]$speaker))$overall[[1]]
+}
+
+mean(acc)
+sd(acc)
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken
+
+# Breast Cancer Dataset
+###################################################################
+
+start.time <- Sys.time()
+#10-fold method 
+numTrails <-20
+n.folds <-10
+acc <- NULL
+accuracies.dt <- NULL
+for (i in 1:numTrails){
+  
+  mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/breastcancer.csv")
+  dataset <- mydata
+  #sufflethedata for each trail
+  shuffle_dataset <- sample(nrow(mydata)) #randomise the iris rows dataset  
+  training.kfold <- dataset[shuffle_dataset,] #create a training dataset
+  
+  
+  #create 10 folds for xVal
+  folds <- createFolds(training.kfold$class, k = 10, list = TRUE, returnTrain = TRUE)
+  
+  
+  #Each fold in a loop is tested and trained 
+  for (j in 1:n.folds){ 
+    
+    XVal.dts <- rpart(class ~ id + clump_thickness	+ size_uniformity + shape_uniformity 
+                      +	marginal_adhesion	+ epithelial_size	+ bare_nucleoli	+ 
+                        bland_chromatin	+ normal_nucleoli	+ mitoses, data= training.kfold[folds[[j]],], method="class")
+    
+    
+    #data is predicted for each fold and stored in accuracy below
+    predic <- predict(XVal.dts, newdata=training.kfold[-folds[[j]],], type="class") 
+    #build a predictiive data model.
+    
+  }
+  #accuracy is sotred as a list for all 20 trials 
+  acc[i] <- confusionMatrix(predic, factor(training.kfold[-folds[[j]],]$class))$overall[[1]]
+}
+
+mean(acc)
+sd(acc)
+end.time <- Sys.time()
+time.taken <- end.time - start.time
+time.taken

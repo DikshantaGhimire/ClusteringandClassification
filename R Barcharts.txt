@@ -1,0 +1,47 @@
+
+teacher  <- matrix(c(0.850,0.827,0.857,0.900, 0.015, 0.093,0.090, 0.030),ncol=2,byrow=FALSE)
+colnames(teacher) <- c("Mean","Std. Deviation")
+rownames(teacher) <- c("Resub","Holdout","10 xVal","LOOCV")
+
+teacher <-as.table(teacher)
+teacher
+
+barplot(t(teacher),beside=T,
+        col = c("blue", "orange"),
+        main='Teacher Evaluation')
+        
+
+wine  <- matrix(c(0.949,0.874,0.873,0.800,0.019,0.064,0.067,0.041),
+                   ncol=2,byrow=FALSE)
+colnames(wine) <- c("Mean","Std. Deviation")
+rownames(wine) <- c("Resub","Holdout","10 xVal","LOOCV")
+
+wine <-as.table(wine)
+barplot(t(wine),beside=T,
+        col = c("blue", "orange"),
+        main='Wine')
+
+
+Iris.dataset  <- matrix(c(0.963,0.923,0.930,0.960,0.006,0.073,0.063,0.020),
+                        ncol=2,byrow=FALSE)
+colnames(Iris.dataset) <- c("Mean","Std. Deviation")
+rownames(Iris.dataset) <- c("Resub","Holdout","10 xVal","LOOCV")
+
+wine <-as.table(Iris.dataset)
+barplot(t(Iris.dataset),beside=T,
+        col = c("blue", "orange"),
+        main='Iris')
+
+
+
+
+breast.cancer  <- matrix(c(0.962,0.941,0.944,0.900,0.005,0.020,0.027,0.032),
+                ncol=2,byrow=FALSE)
+colnames(breast.cancer) <- c("Mean","Std. Deviation")
+rownames(breast.cancer) <- c("Resub","Holdout","10 xVal","LOOCV")
+
+wine <-as.table(breast.cancer)
+barplot(t(breast.cancer),beside=T,
+        col = c("blue", "orange"),
+        main='Breast Cancer')
+

@@ -1,0 +1,151 @@
+#The following model created n number of folds where n-1 data is used for training
+#and 1 data used for testing the model. 
+
+library(rpart)
+library(caret)
+library(lattice)
+library(ggplot2) 
+#install.packages('roperators')
+library (roperators)
+
+
+#Wine Dataset
+###################################################################
+
+#start.time <- Sys.time()
+numTrails <-20
+acc <- NULL
+mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/Wine.csv")
+for (i in 1:numTrails){
+ #dataset is suffeled for each trail of 20
+  shuffle_dataset <- sample(nrow(mydata)) 
+  
+  #length to create the folds 
+  samplesize <- length(shuffle_dataset)
+  training.kfold <- mydata[shuffle_dataset,] #create a training dataset
+  
+  
+  #same number of samplesize fold is created
+  #Wine dataset has 178 fold s with 178 recrods
+folds <- createFolds(training.kfold$Wine, k = samplesize, list = TRUE, returnTrain = TRUE)
+
+  for (j in 1:samplesize){
+    #n-1 dataset is used to created the prediction model. 
+    XVal.dts <- rpart(Wine ~ Alcohol + Malic.acid + Ash +
+                        Acl + Mg + Phenols + Flavanoids + Nonflavanoid.phenols + Proanth + Color.int 
+                      + Hue + OD + Proline, data= training.kfold[folds[[j]],], method="class")
+ 
+    predict <- predict(XVal.dts, newdata=training.kfold[-folds[[j]],], type="class") 
+    #1 datast is used for predition 
+  }
+#accuracy is stored in a list
+#factoring is used to have idential levels with the predict model for confusion matrix to compute
+  acc[i] <- confusionMatrix(predict, (factor(training.kfold[-folds[[j]],]$Wine, 
+                                                           levels=c(levels(training.kfold[-folds[[j]],]$Wine)
+                                                                    , '1','2','3'))) )$overall[[1]]
+  
+}
+
+#mean(acc)
+#sd(acc)
+#end.time <- Sys.time()
+#time.taken <- end.time - start.time
+#time.taken
+
+
+#IRIS 
+###################################################################
+
+numTrails <-20
+acc <- NULL
+mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/iris.csv")
+for (i in 1:numTrails){
+  
+  
+  shuffle_dataset <- sample(nrow(mydata)) 
+  
+  samplesize <- length(shuffle_dataset)
+  training.kfold <- mydata[shuffle_dataset,] #create a training dataset
+
+  folds <- createFolds(training.kfold$species, k = samplesize, list = TRUE, returnTrain = TRUE)
+  
+  for (j in 1:samplesize){
+    XVal.dts <- rpart(species ~ sepal_length + sepal_width + petal_length+ petal_width,
+                     data= training.kfold[folds[[j]],], method="class")
+    
+
+    predic <- predict(XVal.dts, newdata=training.kfold[-folds[[j]],], type="class") 
+    #build a predictiive data model.
+  }
+
+  acc[i] <- confusionMatrix(predic, training.kfold[-folds[[j]],]$species)$overall[[1]]
+  
+}
+
+mean(acc)
+sd(acc)
+
+
+#Teacher Eval
+###################################################################
+
+numTrails <-20
+acc <- NULL
+mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/teacher_assistant_evaluation.csv")
+for (i in 1:numTrails){
+  
+  
+  shuffle_dataset <- sample(nrow(mydata)) 
+  
+  samplesize <- length(shuffle_dataset)
+  training.kfold <- mydata[shuffle_dataset,] #create a training dataset
+  
+  #  folds <- createFolds(training.kfold$classe, k = samplesize, list = TRUE, returnTrain = TRUE)
+  folds = caret::createFolds(training.kfold$speaker, k = samplesize, list = TRUE, returnTrain = T)
+  
+  for (j in 1:samplesize){
+    XVal.dts <- rpart(speaker ~ course_instructor +	Course +	semester 
+                      + Clas_size +	class_attribute, 
+                      data= training.kfold[folds[[j]],], method="class")
+
+    predict <- predict(XVal.dts, newdata=training.kfold[-folds[[j]],], type="class") 
+  }
+  
+  acc[i] <- confusionMatrix(predict, (factor(training.kfold[-folds[[j]],]$speaker, 
+                                                           levels=c(levels(training.kfold[-folds[[j]],]$speaker)
+                                                                    , '1','2','3'))) )$overall[[1]]
+  
+}
+acc
+mean(acc)
+sd(acc)
+
+#Breast Cancer 
+###################################################################
+numTrails <-20
+acc<- NULL
+mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/breastcancer.csv")
+for (i in 1:numTrails){
+  
+  shuffle_dataset <- sample(nrow(mydata)) 
+  
+  samplesize <- length(shuffle_dataset)
+  training.kfold <- mydata[shuffle_dataset,] #create a training dataset
+  
+    folds <- createFolds(training.kfold$class, k = samplesize, list = TRUE, returnTrain = TRUE)
+
+  for (j in 1:samplesize){
+    XVal.dts <- rpart(class ~ id + clump_thickness	+ size_uniformity + shape_uniformity 
+                      +	marginal_adhesion	+ epithelial_size	+ bare_nucleoli	+ 
+                        bland_chromatin	+ normal_nucleoli	+ mitoses, data= training.kfold[folds[[j]],], method="class")
+
+    predictions <- predict(XVal.dts, newdata=training.kfold[-folds[[j]],], type="class") 
+  }
+  
+  acc[i] <- confusionMatrix(predictions, (factor(training.kfold[-folds[[j]],]$class, 
+                                                           levels=c(levels(training.kfold[-folds[[j]],]$class)
+                                                                    , '1','2','3'))) )$overall[[1]]
+  
+}
+mean(acc)
+sd(acc)

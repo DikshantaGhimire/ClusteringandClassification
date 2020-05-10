@@ -1,0 +1,112 @@
+library(rpart)
+
+# following code is a Resubstition Error Method where 100% of the dataset 
+#is being used to test and train the prediction model. 
+#The implementation is repeated 20 times and an average is taken. 
+
+# Wine DataSet
+##########################################################################################
+
+acc <- 0
+for ( i in 1:20) {
+  
+  mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/Wine.csv")
+  dataset <- mydata
+  sampleSize <- nrow(dataset) 
+  testSampleIdx <- sample(nrow(dataset), size=sampleSize)
+  #testSampleIdx
+  #100% of the data is used to test and train the data 
+  trainingSet <- dataset[testSampleIdx,]
+  nrow(trainingSet)
+  iris.dt <- rpart(Wine ~ Alcohol + Malic.acid + Ash +
+                     Acl + Mg + Phenols + Flavanoids + Nonflavanoid.phenols + Proanth + Color.int 
+                   + Hue + OD + Proline, data=trainingSet, method="class")
+  
+  prediction <- predict(iris.dt, newdata=trainingSet, type="class")
+  #confusion matrix is used to caclulate the accuracy
+  cM <- table(trainingSet$Wine, prediction)
+  #Data is saved on a list from each trail
+  acc[i]<- sum(diag(cM))/sum(cM)
+}
+
+mean(acc)
+sd(acc)
+
+#Same Experiment is repeated using remaining 3 datasets
+# Iris Dataset DATASET
+##########################################################################################
+
+acc <- 0
+for ( i in 1:20) {
+  
+ 
+  mydata <- (iris)
+  dataset <- mydata
+  sampleSize <- nrow(dataset) 
+  testSampleIdx <- sample(nrow(dataset), size=sampleSize)
+  trainingSet <- dataset[testSampleIdx,]
+  nrow(trainingSet)
+  iris.dt <- rpart(Species ~ Sepal.Length + Sepal.Width + Petal.Length +
+                     Petal.Width, data=trainingSet, method="class")
+
+  
+  prediction <- predict(iris.dt, newdata=trainingSet, type="class")
+  cM <- table(trainingSet$Species, prediction)
+  acc[i]<- sum(diag(cM))/sum(cM)
+}
+mean(acc)
+sd(acc)
+
+
+# Teacher Eval  DATASET
+##########################################################################################
+
+acc <- 0
+for ( i in 1:20) {
+  
+  mydata = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/teacher_assistant_evaluation.csv")
+  dataset <- mydata
+  sampleSize <- nrow(dataset) 
+  testSampleIdx <- sample(nrow(dataset), size=sampleSize)
+  #testSampleIdx
+  trainingSet <- dataset[testSampleIdx,]
+  nrow(trainingSet)
+  iris.dt <- rpart(speaker ~ course_instructor +	Course +	semester 
+                   + Clas_size +	class_attribute, data=trainingSet, method="class")
+  
+  prediction <- predict(iris.dt, newdata= trainingSet, type="class")
+  cM <- table(trainingSet$speaker, prediction)
+  acc[i]<- sum(diag(cM))/sum(cM)
+}
+
+
+mean(acc)
+sd(acc)
+
+
+# Breast Cancer DATASET
+##########################################################################################
+
+acc <- 0
+for ( i in 1:20) {
+  
+  breastcancer = read.csv("C:/Users/diksh/Google Drive/Reading University/Data Mining/breastcancer.csv")
+  dataset <- breastcancer
+  sampleSize <- nrow(dataset) 
+  testSampleIdx <- sample(nrow(dataset), size=sampleSize)
+
+  trainingSet <- dataset[testSampleIdx,]
+ 
+  iris.dt <- rpart(class ~ id + clump_thickness	+ size_uniformity + shape_uniformity 
+                   +	marginal_adhesion	+ epithelial_size	+ bare_nucleoli	+ 
+                     bland_chromatin	+ normal_nucleoli	+ mitoses, data=trainingSet, method="class")
+  
+  # Resubstitution method: acc/error on the training set
+  
+  prediction <- predict(iris.dt, newdata= trainingSet, type="class")
+  cM <- table(trainingSet$class, prediction)
+  acc[i]<- sum(diag(cM))/sum(cM)
+}
+
+mean(acc)
+sd(acc)
